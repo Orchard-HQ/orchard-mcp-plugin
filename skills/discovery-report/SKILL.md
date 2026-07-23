@@ -6,8 +6,7 @@ description: Render Orchard automation-discovery results as a branded, deck-read
 # Orchard Discovery Report
 
 Turn the discovery candidates the Orchard MCP tools return into a polished HTML
-field report that matches Orchard's design — the same format as the Beacon /
-Diamond / Titan reports.
+field report that matches Orchard's design.
 
 ## Input
 

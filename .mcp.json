@@ -2,7 +2,7 @@
   "mcpServers": {
     "orchard": {
       "type": "http",
-      "url": "${ORCHARD_API_URL}/v1/mcp"
+      "url": "https://api.entertheorchard.ai/v1/mcp"
     }
   }
 }

@@ -13,8 +13,8 @@ discovery capability the platform runs on a schedule, callable by an agent.
 - **Slash command `/find-automatable-work`** — scans the estate and returns ranked,
   prescriptive automation candidates (with time and dollars saved per week).
 - **Slash command `/discovery-report [estate]`** — scans, then renders a branded,
-  deck-ready **HTML Discovery Report** artifact (the same format as the Beacon /
-  Diamond / Titan field reports), via the bundled `discovery-report` skill.
+  deck-ready **HTML Discovery Report** artifact for the estate, via the bundled
+  `discovery-report` skill.
 - **Slash command `/automate [what]`** — finds the work **and builds the automation**:
   the agent authors a workflow graph against Orchard's node catalog + validator and
   saves it as a **draft** in your tenant (you activate it). Orchard supplies the rails;
@@ -26,38 +26,34 @@ discovery capability the platform runs on a schedule, callable by an agent.
   - plus Orchard's read-only estate tools: `list_machines`, `get_machine`, `list_clients`,
     `list_workflows`, `list_runs`, `get_run`, `activity_summary`, `list_activity`.
 
-## Setup
+## Setup — two lines, then sign in
 
-1. **Point at your Orchard API** — the one environment variable Claude Code expands into `.mcp.json`:
+In Claude Code:
 
-   ```bash
-   export ORCHARD_API_URL="https://api.entertheorchard.ai"   # your Orchard API origin
-   ```
+```
+/plugin marketplace add Orchard-HQ/orchard-mcp-plugin
+/plugin install orchard-discovery@orchard
+```
 
-2. **Install the plugin** (from a marketplace that lists it, or a local path), then in Claude Code:
+Then run any command (e.g. `/find-automatable-work`). The first call bounces you to
+**Sign in with Orchard**: your browser opens, you approve the connection in the Orchard
+dashboard while signed in as an owner/admin, and Claude Code receives a short-lived,
+tenant-scoped access token automatically. **Nothing to configure, no token to paste.**
+It refreshes itself; revoke access any time from the dashboard. To let the agent build
+automations, approve the **build** scope when prompted.
 
-   ```
-   /find-automatable-work
-   ```
+<details><summary>Headless / CI (static token instead of the browser flow)</summary>
 
-3. **Sign in with Orchard.** The first call returns a 401 that advertises Orchard's OAuth
-   server; Claude Code opens your browser, you approve the connection **in the Orchard
-   dashboard while signed in as an owner/admin**, and it receives a short-lived,
-   tenant-scoped access token automatically — no token to copy or paste. It refreshes
-   itself; revoke access any time from the dashboard.
-
-<details><summary>Alternative: a static token (no browser)</summary>
-
-For headless use, mint a long-lived per-tenant token and set it as a header instead:
+Mint a long-lived per-tenant token and add it as a header:
 
 ```bash
-curl -X POST "$ORCHARD_API_URL/v1/mcp-tokens" \
+curl -X POST "https://api.entertheorchard.ai/v1/mcp-tokens" \
   -H "Authorization: Bearer <operator-jwt>" -H "Content-Type: application/json" \
   -d '{"name": "claude-code"}'   # returns "token": mcp_<tenanthex>.<secret>, shown once
 ```
 
-Then add `"headers": {"Authorization": "Bearer ${ORCHARD_MCP_TOKEN}"}` to the server
-entry in `.mcp.json` and export `ORCHARD_MCP_TOKEN`. Both auth methods are accepted.
+Then add `"headers": {"Authorization": "Bearer <that-token>"}` to the `orchard` server
+entry in `.mcp.json`. Both auth methods are accepted.
 </details>
 
 ## Notes
