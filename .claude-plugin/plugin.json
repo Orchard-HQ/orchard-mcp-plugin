@@ -1,0 +1,20 @@
+{
+  "name": "orchard-discovery",
+  "version": "0.1.0",
+  "description": "Find and automate the manual work in an MSP estate. Orchard's discovery engine — mine the activity + ConnectWise stream for recurring, automatable work — as a Claude Code tool.",
+  "author": {
+    "name": "Orchard",
+    "url": "https://entertheorchard.ai"
+  },
+  "homepage": "https://entertheorchard.ai",
+  "keywords": [
+    "msp",
+    "automation",
+    "connectwise",
+    "psa",
+    "discovery",
+    "rpa",
+    "orchard"
+  ],
+  "mcpServers": "./.mcp.json"
+}

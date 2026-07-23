@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "orchard": {
+      "type": "http",
+      "url": "${ORCHARD_API_URL}/v1/mcp"
+    }
+  }
+}
