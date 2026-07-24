@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "orchard",
-  "version": "0.1.0",
-  "description": "Orchard's Claude Code plugins — find and automate the manual work in an MSP estate.",
+  "version": "0.2.0",
+  "description": "Orchard's Claude Code plugins — find, build and maintain the automation in an MSP estate.",
   "owner": {
     "name": "Orchard",
     "url": "https://entertheorchard.ai"
@@ -11,7 +11,7 @@
     {
       "name": "orchard-discovery",
       "source": "./",
-      "description": "Find and automate the manual work in an MSP estate through Orchard's MCP server: discovery reports, and agent-built workflow drafts. Sign in with Orchard (OAuth) — no token to paste.",
+      "description": "Work an MSP estate through Orchard's MCP server: automation discovery and branded reports, the ConnectWise + fleet corpus, signals and margins, and the rails to author and edit workflows (drafts only — a human arms them). Sign in with Orchard (OAuth) — no token to paste.",
       "category": "automation"
     }
   ]
