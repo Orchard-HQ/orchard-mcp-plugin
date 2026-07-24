@@ -1,0 +1,25 @@
+# Validate the plugin on every push and PR.
+#
+# This repo has no build and no tests — it ships markdown and JSON straight to anyone
+# who runs `/plugin install`, so a typo in plugin.json breaks installs with nothing in
+# between. scripts/validate.py is that gate: manifests parse, commands and skills are
+# well-formed, and no command names a tool the README doesn't document.
+#
+# It runs here WITHOUT the server's tool list (this repo can't see the private
+# control-plane). The other half — README tools == the tools the MCP server actually
+# exposes — runs in orchard-api's CI, which checks this repo out and runs `make plugin`.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Stdlib only, so the runner's preinstalled Python is enough — no setup-python,
+      # no dependencies, nothing to keep current.
+      - run: python3 scripts/validate.py

@@ -3,17 +3,18 @@ description: Scan an MSP estate for automatable work and rank the candidates
 argument-hint: "[only-automatable]"
 ---
 
-You are helping an MSP decide what to automate, using the **Orchard** MCP server
-(tools are namespaced `mcp__orchard__*`). Orchard has been watching this estate —
+You are helping an MSP decide what to automate, using the **Orchard** MCP server.
+Tool names below are the server's own; your client namespaces them per server, so
+they may surface as `mcp__…orchard__<tool>`. Orchard has been watching this estate —
 the technicians' activity stream and the ConnectWise ticket/time corpus — and can
 surface the recurring, manual work that shouldn't be manual.
 
 Do this:
 
-1. **Run discovery.** Call `mcp__orchard__find_automatable_work`. It scans both
+1. **Run discovery.** Call `find_automatable_work`. It scans both
    sources (ambient activity + PSA tickets), upserts the candidates, and returns
    them ranked by time saved. (If the user only wants to re-read the current list
-   without a fresh scan, call `mcp__orchard__list_discoveries` instead — pass
+   without a fresh scan, call `list_discoveries` instead — pass
    `only_automatable: true` when `$ARGUMENTS` contains `only-automatable`.)
 
 2. **Present the candidates as a prescriptive table**, richest first. For each:

@@ -3,10 +3,11 @@ description: Find automatable work and BUILD the automation as a draft in Orchar
 argument-hint: "[what to automate, e.g. password resets]"
 ---
 
-Find and build an automation for this MSP estate using the Orchard MCP server
-(`mcp__orchard__*`). **You** are the author — Orchard supplies the rails (connector
-catalog, graph validator, execution engine, approval gates); you supply the graph.
-Orchard never drafts it for you.
+Find and build an automation for this MSP estate using the Orchard MCP server. Tool
+names below are the server's own; your client namespaces them per server, so they may
+surface as `mcp__…orchard__<tool>`. **You** are the author — Orchard supplies the rails
+(connector catalog, graph validator, execution engine, approval gates); you supply the
+graph. Orchard never drafts it for you.
 
 1. **Find the work.** `find_automatable_work` (or `list_discoveries`). Pick the
    candidate matching "$ARGUMENTS", else the highest-impact `automatable: yes` one.
