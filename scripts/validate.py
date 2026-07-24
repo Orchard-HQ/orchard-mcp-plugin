@@ -81,9 +81,22 @@ def documented_tools(readme: str) -> set[str]:
 
 def check_manifests(endpoint: str | None) -> dict:
     manifest = load_json(ROOT / ".claude-plugin" / "plugin.json")
-    for key in ("name", "version", "description"):
+    for key in ("name", "description"):
         if not manifest.get(key):
             fail(f"plugin.json: missing '{key}'")
+    # `version` is deliberately ABSENT. Claude Code resolves a plugin's version from
+    # plugin.json, then the marketplace entry, then the git commit SHA — and that
+    # version is the cache key for updates. With an explicit version, users receive
+    # changes ONLY when it's bumped: pushing commits without bumping ships nothing
+    # and `/plugin update` reports "already at the latest version". Falling through
+    # to the SHA means every commit here is an update, which is what we want while
+    # the tool surface is moving. Warn rather than fail, so pinning a release later
+    # is a one-line change and not a fight with this script.
+    if manifest.get("version"):
+        warn(
+            f"plugin.json pins version {manifest['version']} — updates now require bumping it "
+            "on every change customers should receive; delete the field to version by commit SHA"
+        )
 
     mcp_path = ROOT / str(manifest.get("mcpServers", ".mcp.json")).removeprefix("./")
     servers = load_json(mcp_path).get("mcpServers", {})
@@ -170,7 +183,8 @@ def main() -> int:
             print(f"  - {problem}")
         return 1
     scope = "against the live server" if args.tools else "structure + README"
-    print(f"{manifest.get('name')} v{manifest.get('version')}: ok ({scope}) — "
+    version = f"v{manifest['version']}" if manifest.get("version") else "@commit-sha"
+    print(f"{manifest.get('name')} {version}: ok ({scope}) — "
           f"{len(commands)} commands, {len(skills)} skills, {len(tools)} tools")
     return 0
 

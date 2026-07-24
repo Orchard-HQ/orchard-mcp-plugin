@@ -1,6 +1,5 @@
 {
   "name": "orchard-discovery",
-  "version": "0.2.0",
   "description": "Find, build and maintain the automation in an MSP estate. Orchard's discovery engine, its ConnectWise + fleet corpus, and the rails to author and edit workflows — as Claude Code tools.",
   "author": {
     "name": "Orchard",
