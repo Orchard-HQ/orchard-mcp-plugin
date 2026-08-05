@@ -58,7 +58,21 @@ and `/workflow-edit`).
     metrics), `list_clients` (or one client's impact rollup), `activity_summary`,
     `list_activity`, `estate_graph` (org / process / network), `get_insights`.
   - **PSA** — `list_tickets`, `get_ticket` (with its full timeline), `psa_workload`,
-    `agreement_margin`, `unlogged_work`.
+    `agreement_margin`, `unlogged_work`. Plus the live pair: `connectwise_catalog`
+    (search the vendored CW REST spec — ~3,000 operations with their real paths,
+    parameters and required fields) and `connectwise_call` (execute one operation
+    against the live PSA, spec-validated first; GET on any connection, writes need
+    the run scope and are audited).
+  - **Diagnostics** — prove a step before a playbook depends on it:
+    `test_workflow_node` (one step through an honesty ladder — reads run for real,
+    writes render and execute nothing, desktop steps return the exact watcher
+    payload), `sample_workflow_node` (side-effect-free steps for their real output
+    shape), `observe_machine` / `get_observation` (what an endpoint can see — DOM
+    scene, UIA tree, open windows — actuates nothing), `test_step_on_machine` /
+    `get_step_test` (ONE desktop/terminal step on a real endpoint, no run around
+    it, failure scene included; needs the run scope), `test_connection` (exercise
+    a connection's stored secrets), `simulate_webhook` (payload validation + a
+    shadow run + whether the real POST would land).
   - **Governance** — `list_signals`, `governance_state`, `list_audit`, `list_team`.
 
 ## Setup — two lines, then sign in
