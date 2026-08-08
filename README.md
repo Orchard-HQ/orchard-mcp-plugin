@@ -54,9 +54,18 @@ and `/workflow-edit`).
     `list_runs`, `get_run` (the per-step trail), `workflow_estate` (pulse and drift),
     `savings_ledger` (measured savings vs. the frozen baseline), `list_patterns`,
     `list_heals`, `list_documents` (SOPs).
+  - **Running one** — `shadow_run_workflow` executes a playbook with every outward
+    write provably suppressed, so you can see what it WOULD do before it does it
+    (build scope). `run_workflow` executes it for real against this workspace's
+    connected systems and returns the finished run (run scope). `revert_run` walks
+    a finished run newest-step-first and undoes what can honestly be undone —
+    honestly being the operative word: an email that has been sent has no inverse,
+    and revert says so rather than pretending (run scope).
   - **Fleet** — `list_machines`, `get_machine` (with hardware inventory and live
     metrics), `list_clients` (or one client's impact rollup), `activity_summary`,
-    `list_activity`, `estate_graph` (org / process / network), `get_insights`.
+    `list_activity`, `estate_graph` (org / process / network), `get_insights`,
+    `list_levers` (the mined manual work, each with the step sequence it was
+    observed from rather than a re-fetched approximation).
   - **PSA** — `list_tickets`, `get_ticket` (with its full timeline), `psa_workload`,
     `agreement_margin`, `unlogged_work`. Plus the live pair: `connectwise_catalog`
     (search the vendored CW REST spec — ~3,000 operations with their real paths,
