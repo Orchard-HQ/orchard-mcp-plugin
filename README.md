@@ -4,8 +4,9 @@ Point Claude Code at an MSP estate. Orchard watches the technicians' activity st
 and the ConnectWise ticket/time corpus, and this plugin hands an agent the whole
 thing: the **recurring manual work that shouldn't be manual** — ranked, priced, and
 mapped to the connector steps that would automate it — plus the tickets, margins,
-fleet, signals and playbooks underneath it, and the rails to **build and edit the
-automations themselves**.
+fleet, signals and playbooks underneath it, the rails to **build and edit the
+automations themselves**, and an open visual grammar for creating complete, live
+Insights pages from any shape of estate data.
 
 This is the customer-facing surface of Orchard's own MCP server: the same capability
 the platform runs on a schedule, callable by an agent, scoped to your tenant.
@@ -22,6 +23,11 @@ the platform runs on a schedule, callable by an agent, scoped to your tenant.
   does the authoring — no Orchard-side AI. Needs the `build` scope.
 - **`/workflow-edit [playbook] — [change]`** — reads an existing playbook, proposes
   the change, shows you the node-level diff, validates, and saves a new version.
+- **`/insights-page [request]`** — investigates the estate and builds or edits a
+  complete, live page in Insights Studio: native tables/charts/timelines/maps,
+  freeform scenes, networks, and sandboxed custom visuals. The model in this client
+  authors the page, so direct creation does not require Orchard BYOK. Needs the
+  `build` scope.
 - **`/playbook-audit`** — every playbook checked for drift, fragility and dead weight:
   does the saved graph still validate, what keeps healing, what's active but never fires.
 - **`/estate-brief [client]`** — a grounded brief on the estate: where the hours go,
@@ -31,9 +37,10 @@ the platform runs on a schedule, callable by an agent, scoped to your tenant.
 - **`/margin-review [client]`** — the money view: agreement margin, unlogged work, and
   what automation has measurably returned.
 
-Two skills come along for the ride: `discovery-report` (the HTML artifact) and
+Three skills come along for the ride: `discovery-report` (the HTML artifact),
 `workflow-authoring` (the graph grammar and the arming boundary, used by `/automate`
-and `/workflow-edit`).
+and `/workflow-edit`), and `insights-studio-authoring` (the research, Visual IR,
+validation, and revision-safe save loop used by `/insights-page`).
 
 - **MCP tools**, usable directly or by any agent. These are the server's own names;
   Claude Code namespaces tools per server, so installed from the marketplace they
@@ -44,6 +51,12 @@ and `/workflow-edit`).
     governance posture, and what your connection is allowed to do. Start here.
   - **Discovery** — `find_automatable_work` (a fresh scan of activity + PSA),
     `list_discoveries` (the current candidates, no rescan).
+  - **Insights Studio** — `get_insight_page_toolkit` (the on-demand Visual IR and
+    renderer grammar), `validate_insight_page`, `list_insight_pages`,
+    `get_insight_page`, `create_insight_page`, and `update_insight_page`. Direct
+    creation uses the model already running in this client and needs no Orchard AI
+    key; `create_insight_page_from_prompt` delegates the research and composition to
+    the tenant's BYOK-powered Orchard Studio agent. Create/update need the build scope.
   - **Authoring & editing** — `get_workflow_toolkit` (node catalog, wired connectors,
     authoring rules), `validate_workflow` (validator + linter + the diff of a proposed
     edit; no save), `build_workflow` (save a graph as a draft), `update_workflow` (edit
@@ -63,15 +76,19 @@ and `/workflow-edit`).
     and revert says so rather than pretending (run scope).
   - **Fleet** — `list_machines`, `get_machine` (with hardware inventory and live
     metrics), `list_clients` (or one client's impact rollup), `activity_summary`,
-    `list_activity`, `estate_graph` (org / process / network), `get_insights`,
-    `list_levers` (the mined manual work, each with the step sequence it was
-    observed from rather than a re-fetched approximation).
+    `list_activity`, `query_activity_events` (the record-level work stream),
+    `list_entities` (durable business records and who co-touched them),
+    `list_rituals` (several real sittings of repeated work), `estate_graph` (org /
+    process / network), `get_insights`, `list_levers` (the mined manual work, each
+    with the step sequence it was observed from rather than a re-fetched
+    approximation).
   - **PSA** — `list_tickets`, `get_ticket` (with its full timeline), `psa_workload`,
-    `agreement_margin`, `unlogged_work`. Plus the live pair: `connectwise_catalog`
-    (search the vendored CW REST spec — ~3,000 operations with their real paths,
-    parameters and required fields) and `connectwise_call` (execute one operation
-    against the live PSA, spec-validated first; GET on any connection, writes need
-    the run scope and are audited).
+    `query_time_entries` (the underlying paginated PSA records), `agreement_margin`,
+    `unlogged_work`. Plus the live pair: `connectwise_catalog` (search the vendored
+    CW REST spec — ~3,000 operations with their real paths, parameters and required
+    fields) and `connectwise_call` (execute one operation against the live PSA,
+    spec-validated first; GET on any connection, writes need the run scope and are
+    audited).
   - **Diagnostics** — prove a step before a playbook depends on it:
     `test_workflow_node` (one step through an honesty ladder — reads run for real,
     writes render and execute nothing, desktop steps return the exact watcher
@@ -98,7 +115,7 @@ Then run any command (e.g. `/find-automatable-work`). The first call bounces you
 dashboard while signed in as an owner/admin, and Claude Code receives a short-lived,
 tenant-scoped access token automatically. **Nothing to configure, no token to paste.**
 It refreshes itself; revoke access any time from the dashboard. To let the agent build
-automations, approve the **build** scope when prompted.
+automations or Studio pages, approve the **build** scope when prompted.
 
 <details><summary>Headless / CI (static token instead of the browser flow)</summary>
 
@@ -119,11 +136,11 @@ entry in `.mcp.json`. Both auth methods are accepted.
 - **Tenant-scoped and safe.** The token encodes your tenant; every tool is bound to
   your MSP's data by row-level security — never another tenant's, never the
   cross-tenant god-view.
-- **Writes are few, and scoped.** `find_automatable_work` runs a scan, which upserts
-  discovery candidates (an idempotent write). Only three other tools write anything —
-  `build_workflow`, `update_workflow`, `set_workflow_status` — and all three require
-  the `build` scope you approve at connect time. Everything else is read-only. Agent
-  writes land in your own audit trail, actored as `mcp-agent`.
+- **Writes are explicit and scoped.** `find_automatable_work` runs a scan, which
+  upserts discovery candidates (an idempotent write). Workflow authoring and Studio
+  page creation/editing require the `build` scope you approve at connect time;
+  executing a workflow or mutating ConnectWise requires the separate `run` scope.
+  Agent writes land in your own audit trail, actored as `mcp-agent`.
 - **The arming boundary: an agent authors, a human arms.** This is enforced in the
   server, not asked for in a prompt:
   - `build_workflow` saves a **draft**. It cannot run until a person activates it.

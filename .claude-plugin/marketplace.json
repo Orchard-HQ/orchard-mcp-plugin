@@ -11,7 +11,7 @@
     {
       "name": "orchard-discovery",
       "source": "./",
-      "description": "Work an MSP estate through Orchard's MCP server: automation discovery and branded reports, the ConnectWise + fleet corpus, signals and margins, and the rails to author and edit workflows (drafts only — a human arms them). Sign in with Orchard (OAuth) — no token to paste.",
+      "description": "Work an MSP estate through Orchard's MCP server: investigate raw operating data, build live multi-tile Insights pages, discover automation, and author workflows (drafts only — a human arms them). Sign in with Orchard (OAuth) — no token to paste.",
       "category": "automation"
     }
   ]
