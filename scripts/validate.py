@@ -30,6 +30,17 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # when installed from the marketplace).
 TOOL_REF = re.compile(r"mcp__(?:plugin_[\w-]+_)?orchard__(\w+)")
 BACKTICKED = re.compile(r"`([a-z][a-z0-9_]*)`")
+# A backticked name preceded by a call verb IS a tool call, and it must be a tool the
+# server actually serves. The fuzzy check below only catches a name that RESEMBLES a
+# served tool, so a command naming a tool that exists on dev but is not deployed sailed
+# through silently — which is exactly how /insights-page shipped calling seven Studio
+# tools production does not serve, failing on its first step for anyone who installed it.
+#
+# Deliberately narrow. Every backticked snake_case token would flag 21 names across the
+# plugin, 14 of them legitimate field names (client_id, workflow_id, est_dollars_week);
+# requiring a call verb flags 5, and all 5 are real. Precision beats reach for a gate
+# whose false positives block a release.
+CALLED = re.compile(r"[Cc]all(?:s|ing|ed)?\s+`([a-z][a-z0-9_]*)`")
 # The "- **MCP tools**…" bullet and everything nested under it, i.e. up to the next
 # top-level bullet or heading.
 TOOL_BLOCK = re.compile(r"^- \*\*MCP tools\*\*.*?(?=^- |^#|\Z)", re.S | re.M)
@@ -117,8 +128,18 @@ def check_manifests(endpoint: str | None) -> dict:
     return manifest
 
 
-def check_tool_refs(path: pathlib.Path, tools: set[str]) -> set[str]:
-    """Tools this file names. Anything shaped like a tool but unknown is drift."""
+def check_tool_refs(path: pathlib.Path, tools: set[str],
+                    served: set[str] | None = None) -> set[str]:
+    """Tools this file names. Anything shaped like a tool but unknown is drift.
+
+    Two different questions, and they need two different sets. `tools` is the VOCABULARY
+    (README ∪ served) and answers "is this a real Orchard name" — the liveness and
+    stale-spelling checks. `served` is what the endpoint will actually answer today and
+    answers "will this step run". Checking a call against the union is what let
+    /insights-page ship: the README documented the Studio tools, so a command calling
+    them looked fine while production served none of them.
+    """
+    callable_tools = served if served is not None else tools
     text = path.read_text()
     where = path.relative_to(ROOT)
     named = set()
@@ -127,6 +148,10 @@ def check_tool_refs(path: pathlib.Path, tools: set[str]) -> set[str]:
             named.add(ref)
         else:
             fail(f"{where}: names tool '{ref}', which the server doesn't expose")
+    for token in sorted(set(CALLED.findall(text))):
+        if token not in callable_tools:
+            fail(f"{where}: tells the agent to call '{token}', which the server doesn't "
+                 f"serve — the command fails on its first step")
     for token in sorted(set(BACKTICKED.findall(text))):
         if token in tools:
             named.add(token)
@@ -144,6 +169,10 @@ def main() -> int:
     manifest = check_manifests(args.endpoint)
     readme = (ROOT / "README.md").read_text()
     tools = documented_tools(readme)
+    # None => no server list was supplied, so a call can only be checked against the
+    # README's vocabulary. That is the weaker mode CI runs in when the plugin repo is
+    # pushed on its own; orchard-api's `make plugin` passes the real list.
+    served: set[str] | None = None
 
     if args.tools:
         served = {t.strip() for t in args.tools.split(",") if t.strip()}
@@ -163,7 +192,7 @@ def main() -> int:
     for cmd in commands:
         if not frontmatter(cmd).get("description"):
             fail(f"{cmd.relative_to(ROOT)}: frontmatter needs a 'description'")
-        if not check_tool_refs(cmd, tools):
+        if not check_tool_refs(cmd, tools, served):
             fail(f"{cmd.relative_to(ROOT)}: names no Orchard tool — is it still wired to the server?")
 
     skills = sorted((ROOT / "skills").glob("*/SKILL.md"))
@@ -173,7 +202,7 @@ def main() -> int:
             fail(f"{skill.relative_to(ROOT)}: name '{meta.get('name')}' != directory '{skill.parent.name}'")
         if not meta.get("description"):
             fail(f"{skill.relative_to(ROOT)}: frontmatter needs a 'description'")
-        check_tool_refs(skill, tools)
+        check_tool_refs(skill, tools, served)
 
     for note in warnings:
         print(f"warning: {note}")
