@@ -146,7 +146,9 @@ entry in `.mcp.json`. Both auth methods are accepted.
   - `build_workflow` saves a **draft**. It cannot run until a person activates it.
   - `update_workflow` on a draft adopts the edit. On a **live** playbook it appends
     the new version but leaves the workflow pointed at the one a human approved — so
-    an agent can stage a change to a running automation, never make one.
+    an agent can stage a change to a running automation, never make one. An
+    owner/admin makes it live from the playbook's **More → Versions… → Adopt**, which
+    makes that exact version current; a later human save supersedes a pending one.
   - `set_workflow_status` can only *lower* autonomy (pause, disable, archive). An
     agent can pull the brake on something misbehaving; it cannot start anything.
 - **Accepting is an operator action.** Turning a candidate into a live workflow

@@ -55,5 +55,5 @@ Report which rung each conclusion came from. "The rendered payload shows X"
 (rung 2) and "the live endpoint answered X" (rung 3+) are different strengths
 of evidence — say which you have. A step you could not test (machine offline,
 scope missing) is UNTESTED; say that, never infer it works. If the fix is
-staged behind a review URL, the run is not fixed until a human applies it —
-end by saying who has to act next.
+staged behind a review URL, the run is not fixed until a human adopts it
+(More → Versions… → Adopt on that version) — end by saying who has to act next.

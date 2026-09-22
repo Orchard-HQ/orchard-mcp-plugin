@@ -29,6 +29,6 @@ client namespaces them per server, so they may surface as
    prefer a test machine; the run scope is required). Then `update_workflow`.
 5. **Report.** What failed, why, what changed, which test proved it, and who
    acts next — on a live playbook the fix lands staged behind a review URL,
-   and the run is not fixed until a human applies it. An irreversible step
+   and the run is not fixed until a human adopts it (More → Versions… → Adopt). An irreversible step
    that already fired (a sent note, an executed command) stays fired; say so
    rather than implying the revert covered it.

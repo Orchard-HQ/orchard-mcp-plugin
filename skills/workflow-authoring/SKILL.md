@@ -68,7 +68,16 @@ that lets an MSP hand an agent write access at all.
   but leaves the running one pointed at what the human approved. You get
   `applied: false` and a review URL. **That is the correct outcome, not a failure** —
   do not try to route around it, and do not report it as an error. Tell the user
-  the change is staged and where to review it.
+  the change is staged as version N, that it is **not live**, and where to make it
+  live: the playbook's **More → Versions… → Adopt on vN** (the review URL opens that
+  list). Adopting makes vN itself the current version, same number; "revert" is for
+  going back and appends a copy.
+- It is live exactly when `get_workflow` reports `current_version` equal to N.
+  Being the newest version proves nothing: `list_workflow_versions` marks each row
+  `current`, `proposed` (above current, not running) or `past`. If
+  `current_version` is higher than N, a later human save superseded your proposal;
+  it is stale, so re-propose against the current graph instead of asking for an
+  adopt.
 - `set_workflow_status` can lower autonomy (draft / disabled / archived) — pull the
   brake on something misbehaving. It cannot raise it. Arming lives in the Orchard
   console, under owner/admin sign-in.

@@ -30,8 +30,15 @@ Request: **$ARGUMENTS**
    - `applied: true` → the playbook wasn't live, so the edit is in effect. Say which
      version it is.
    - `applied: false` → **this is the expected outcome for a live playbook, not a
-     failure.** The version is staged; the automation still runs the human-approved
-     one. Give the review URL and say an operator adopts it in Orchard.
+     failure.** Your edit is version N and it is **not live**; the automation still
+     runs the human-approved one. Give the review URL (it opens the playbook's
+     Versions list) and say exactly what to click: **More → Versions… → Adopt on
+     vN**. Adopting makes vN itself the current version, same number. "Revert" is
+     for going back to an older version and appends a copy, so it is not the button.
+   - To confirm it went live, `get_workflow` must report `current_version` equal to
+     N. If `current_version` is *higher* than N, a human save landed after yours and
+     superseded it: the proposal is stale, so re-read the playbook and re-propose
+     rather than asking anyone to adopt it.
 
 If the user actually wants to *stop* a misbehaving playbook rather than fix it,
 `set_workflow_status` can pause (`draft`), stop (`disabled`) or shelve (`archived`)
