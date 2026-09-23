@@ -17,7 +17,10 @@ they land on margin. That's the frame for the whole answer.
    - `unlogged_work` — ticket work the Witness *observed* with no matching time
      entry. Leakage, priced. Different from margin: this is revenue never captured,
      not revenue eaten by labor.
-   - `psa_workload` — hours by tech × company × agreement. Who's carrying what.
+   - `query_facts` with `fact: "psa_time"`, `measures: ["actual_hours", "entries"]`,
+     `group_by: ["member", "company", "agreement"]` — hours by tech × company ×
+     agreement. Who's carrying what. Its `coverage` names any day not built yet
+     (today, always); say so rather than reading it as zero.
    - `savings_ledger` — what activated automations have measurably returned against
      the manual baseline frozen when each went live.
    - `list_discoveries` with `only_automatable: true` — the work still on the table.

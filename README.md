@@ -76,13 +76,20 @@ validation, and revision-safe save loop used by `/insights-page`).
     and revert says so rather than pretending (run scope).
   - **Fleet** — `list_machines`, `get_machine` (with hardware inventory and live
     metrics), `list_clients` (or one client's impact rollup), `activity_summary`,
+    `activity_drilldown` (break any of its totals down by destination, category, app,
+    person, day, machine or client, up to 365 days, without paging events),
     `list_activity`, `query_activity_events` (the record-level work stream),
     `list_entities` (durable business records and who co-touched them),
     `list_rituals` (several real sittings of repeated work), `estate_graph` (org /
     process / network), `get_insights`, `list_levers` (the mined manual work, each
     with the step sequence it was observed from rather than a re-fetched
     approximation).
-  - **PSA** — `list_tickets`, `get_ticket` (with its full timeline), `psa_workload`,
+  - **Facts** — `query_facts`: one aggregate question over any day-grain fact (time
+    by app, destination or person; network flows; logged PSA hours by member, company
+    and agreement; workflow runs; AI spend), answered in the warehouse, with the days
+    it is built through named rather than estimated. Call it with no fact for the
+    catalogue of facts, dimensions and measures.
+  - **PSA** — `list_tickets`, `get_ticket` (with its full timeline),
     `query_time_entries` (the underlying paginated PSA records), `agreement_margin`,
     `unlogged_work`. Plus the live pair: `connectwise_catalog` (search the vendored
     CW REST spec — ~3,000 operations with their real paths, parameters and required
