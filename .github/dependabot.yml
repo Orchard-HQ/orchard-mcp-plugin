@@ -1,0 +1,21 @@
+# Dependency updates. Weekly; minor and patch bumps arrive as ONE grouped PR per
+# ecosystem, majors one PR each so a breaking change is reviewed on its own.
+#
+# Security updates (PRs for a known advisory) are switched on in the repo's
+# Settings > Code security, not here; this file only shapes them, grouping
+# minor/patch fixes the same way. They always target the default branch.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      security-minor-and-patch:
+        applies-to: security-updates
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
