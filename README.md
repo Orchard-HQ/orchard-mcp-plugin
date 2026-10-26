@@ -57,6 +57,11 @@ validation, and revision-safe save loop used by `/insights-page`).
     creation uses the model already running in this client and needs no Orchard AI
     key; `create_insight_page_from_prompt` delegates the research and composition to
     the tenant's BYOK-powered Orchard Studio agent. Create/update need the build scope.
+  - **Tools** — pages that run playbooks for the people who don't build them, on a
+    ticket or for a client, from the dashboard or the ConnectWise pod. `list_tools`
+    and `get_tool` (its tiles, its playbooks' inputs, and where each input can be
+    filled from), and `save_tool` to make one or change one against the revision it
+    was read at. Saving needs the build scope.
   - **Authoring & editing** — `get_workflow_toolkit` (node catalog, wired connectors,
     authoring rules), `validate_workflow` (validator + linter + the diff of a proposed
     edit; no save), `build_workflow` (save a graph as a draft), `update_workflow` (edit
