@@ -67,8 +67,8 @@ validation, and revision-safe save loop used by `/insights-page`).
     the revision it was read at. Saving needs the build scope.
   - **Results** — a playbook hands an answer back with a "Hand back a result" step
     (`transform.result`): typed values declared in the graph, so `get_workflow` and
-    `validate_workflow` return `declared_result` before it has ever run, and
-    `get_run` and `run_workflow` return the run's `result`.
+    `validate_workflow` return the declared result before it has ever run, and
+    `get_run` and `run_workflow` return what the run handed back.
   - **Authoring & editing** — `get_workflow_toolkit` (node catalog, wired connectors,
     authoring rules), `validate_workflow` (validator + linter + the diff of a proposed
     edit; no save), `build_workflow` (save a graph as a draft), `update_workflow` (edit
