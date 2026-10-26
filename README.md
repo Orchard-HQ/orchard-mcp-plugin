@@ -58,10 +58,17 @@ validation, and revision-safe save loop used by `/insights-page`).
     key; `create_insight_page_from_prompt` delegates the research and composition to
     the tenant's BYOK-powered Orchard Studio agent. Create/update need the build scope.
   - **Tools** — pages that run playbooks for the people who don't build them, on a
-    ticket or for a client, from the dashboard or the ConnectWise pod. `list_tools`
-    and `get_tool` (its tiles, its playbooks' inputs, and where each input can be
-    filled from), and `save_tool` to make one or change one against the revision it
-    was read at. Saving needs the build scope.
+    ticket or for a client, from the dashboard or the ConnectWise pod. A tool is laid
+    out in the Insights Studio grammar: beside its run forms, view tiles (any
+    renderer but custom) draw from Orchard data feeds or from what a playbook hands
+    back, so the playbook is the page's backend. `list_tools` and `get_tool` (its
+    tiles and data feeds, its playbooks' inputs and what each hands back, and where
+    each input can be filled from), and `save_tool` to make one or change one against
+    the revision it was read at. Saving needs the build scope.
+  - **Results** — a playbook hands an answer back with a "Hand back a result" step
+    (`transform.result`): typed values declared in the graph, so `get_workflow` and
+    `validate_workflow` return `declared_result` before it has ever run, and
+    `get_run` and `run_workflow` return the run's `result`.
   - **Authoring & editing** — `get_workflow_toolkit` (node catalog, wired connectors,
     authoring rules), `validate_workflow` (validator + linter + the diff of a proposed
     edit; no save), `build_workflow` (save a graph as a draft), `update_workflow` (edit
