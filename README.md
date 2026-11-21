@@ -108,6 +108,20 @@ validation, and revision-safe save loop used by `/insights-page`).
     fields) and `connectwise_call` (execute one operation against the live PSA,
     spec-validated first; GET on any connection, writes need the run scope and are
     audited).
+  - **Team and clients** — `ticket_stats` (per person and for a team over a period:
+    tickets opened, closed and reopened, first response and time to resolve, closed
+    inside SLA, hours logged and billable, time off, each person against the team and
+    the workspace's role expectations, with a monthly trend), `call_stats` (calls,
+    talk time and after-call time per person, from calls captured on the desk or a
+    phone system's call history; someone who neither runs the desk nor reviews calls
+    reads only their own), and `client_spend` (per client: the services on each
+    agreement, what it bills a month, what was invoiced, what changed, and the next
+    renewal; it is the books, so it is refused to anyone who can't see them).
+  - **Backups** — `backup_state`: one computer's backups in Acronis Cyber Protect (each
+    plan's last good backup, last run, next run, status and the last failure's
+    reason), or a client's overview (how many computers are in each status and which
+    have had no good backup lately). It answers that Acronis isn't connected rather
+    than guessing.
   - **Diagnostics** — prove a step before a playbook depends on it:
     `test_workflow_node` (one step through an honesty ladder — reads run for real,
     writes render and execute nothing, desktop steps return the exact watcher
