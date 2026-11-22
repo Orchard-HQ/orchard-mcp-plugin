@@ -14,13 +14,16 @@ An array of discovery candidates (from `find_automatable_work` or
 `list_discoveries`). Each candidate carries:
 
 - `title`, `pitch` — the named business process and one-line case.
-- `source` — `"psa"` (a recurring ConnectWise ticket category, priced from logged
-  labor) or `"activity"` (a repeated desktop ritual from the activity stream).
+- `source` — `"psa"` (a recurring PSA ticket category, priced from logged time, or
+  from a default handle time where none was logged, which its `pitch` calls
+  "estimated") or `"activity"` (a repeated desktop ritual from the activity stream).
 - `automatable` — `"yes" | "partial" | "no"`.
-- `suggested_verbs` — the connector steps it maps to (e.g. `action.connectwise:create_ticket`).
+- `suggested_verbs` — the connector steps it maps to (e.g. `action.connectwise:create_ticket`,
+  on the tenant's own PSA node).
 - `est_minutes_week`, `est_dollars_week` — impact. `occurrences`, `distinct_days`,
-  `distinct_users`, `distinct_machines` — evidence. `apps` — tools touched.
-- `pattern` (if present) — the ordered `{app,title}` ritual; use it for the tool `.flow`.
+  `distinct_users`, `distinct_machines` — evidence. `apps` — the tools touched, in
+  order of first touch, as raw process names (`excel.exe`); use them for the tool
+  `.flow`, named the way people know them (Microsoft Excel).
 
 ## Steps
 
@@ -47,4 +50,6 @@ An array of discovery candidates (from `find_automatable_work` or
 The engine's credibility is that it doesn't only ever find gold. If an estate is
 thin (few `yes`, low hours), say so plainly in the lede and use the `ice` accent —
 an accurate "not much here" is a feature, not a failure. Dollar figures are
-rate-dependent: label the assumed rate; hours are measured, so state them flatly.
+rate-dependent: label the assumed rate. Hours are observed on screens or logged in the
+PSA, so state them flatly, except a `psa` candidate whose pitch says "estimated"
+(no time logged): label that one.

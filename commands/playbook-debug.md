@@ -14,19 +14,23 @@ client namespaces them per server, so they may surface as
    rendered `input` and its error are the whole starting point — quote both.
 2. **Reproduce at the cheapest rung.** `test_workflow_node` for the failing
    node with `context_run_id` set to the failed run — same step, same data.
-   For a ConnectWise step, cross-check the operation against
-   `connectwise_catalog` and read the live record with a `connectwise_call`
-   GET. For a desktop step, `observe_machine` (browser_scene or uia_tree)
-   to see what the endpoint can actually see — never guess a selector.
+   For a PSA step, cross-check the operation against that PSA's catalog
+   (`connectwise_catalog`, `autotask_catalog`, `halo_catalog` or
+   `bms_catalog`) and read the live record with a GET through its call
+   (`connectwise_call`, `autotask_call`, `halo_call` or `bms_call`). For a
+   desktop step, `observe_machine` (browser_scene or uia_tree) to see what
+   the endpoint can actually see — never guess a selector.
 3. **Name the cause**, with its evidence rung: wrong/blank rendered value,
-   wrong CW reference, permission refused (the error carries CW's own status
-   and message — read it), selector that matches nothing on the real screen,
+   wrong PSA reference, permission refused (the error carries the PSA's own
+   status and message — read it), selector that matches nothing on the real screen,
    dead connection (`test_connection`), or a webhook that would never fire
    (`simulate_webhook` says why).
 4. **Fix and prove.** Edit the graph, `validate_workflow`, then re-run the
    SAME test that failed — a desktop fix is proven with
    `test_step_on_machine` (real actuation: say what you're about to drive,
-   prefer a test machine; the run scope is required). Then `update_workflow`.
+   prefer a test machine; the run scope is required, and it is refused while
+   someone is at that keyboard or the workspace or client is supervised).
+   Then `update_workflow`.
 5. **Report.** What failed, why, what changed, which test proved it, and who
    acts next — on a live playbook the fix lands staged behind a review URL,
    and the run is not fixed until a human adopts it (More → Versions… → Adopt). An irreversible step

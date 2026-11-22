@@ -7,18 +7,28 @@ description: Author and edit Orchard workflow graphs safely — the sequence, th
 
 You are the author. Orchard supplies the rails — the connector catalog, the graph
 validator, the execution engine, the approval gates — and you supply the graph. It
-never drafts one for you.
+doesn't draft one for you; a ready-made recipe or a single resolved step (below) is as
+far as it goes.
 
-**Never invent the catalog.** Node types, ConnectWise operations, config field keys
-and branch names all come from `get_workflow_toolkit` at run time, per tenant. A
-config key you made up doesn't fail loudly — it fails *silently* at run time, on a
-live system. Read the toolkit first, every time.
+**Never invent the catalog.** Node types, PSA operations, config field keys and
+branch names all come from `get_workflow_toolkit` at run time, per tenant. A
+connection with many operations is listed there by name only; read the one you need
+with `find_connector_operations` before writing its step. A config key you made up
+doesn't fail loudly — it fails *silently* at run time, on a live system. Read the
+toolkit first, every time.
+
+Two shortcuts the toolkit's rules point you to. When the request names a step in
+plain words ("add a note to the ticket"), `resolve_workflow_step` returns the app,
+the operation and the step to add (it uses the workspace's AI key; if it comes back
+`ask`, put its question to the person as written and never pick between two apps for
+them). When one of the toolkit's `recipes` already does what was asked, offer
+`start_from_recipe` instead of authoring the graph by hand.
 
 ## The sequence
 
 Build and edit are the same loop with a different last step.
 
-1. **Orient.** `estate_overview` — is ConnectWise wired? Is the estate paused? What's
+1. **Orient.** `estate_overview` — which PSA is wired? Is the estate paused? What's
    the autonomy ceiling? Can this connection even build (the `mcp:build` scope)?
    A supervised estate holds every outward write for approval no matter what your
    graph says, and that changes what a good graph looks like.
@@ -42,7 +52,10 @@ Build and edit are the same loop with a different last step.
 ## The graph rules
 
 - **Exactly one trigger.** `trigger.webhook` for a PSA-ticket automation (then read
-  the ticket with `action.connectwise` `get_ticket`); `trigger.schedule` for a sweep;
+  the ticket with `get_ticket` on the tenant's PSA node: `action.connectwise`,
+  `action.autotask`, `action.halopsa` or `action.kaseya_bms`, the same operations and
+  config keys on each); `trigger.schedule` for a sweep, with its `timezone` set when
+  the schedule means someone's local time (it runs in UTC without one);
   `trigger.manual` otherwise.
 - **Per-run values come from the trigger**: `{{ trigger.<key> }}`. Values from an
   earlier step: `{{ nodes.<id>.<field> }}`.
@@ -63,6 +76,8 @@ You author and edit. **A human arms.** This isn't a formality; it's the contract
 that lets an MSP hand an agent write access at all.
 
 - `build_workflow` saves a **DRAFT**. It cannot run until a person activates it.
+  `start_from_recipe` saves one too, its trigger in test-run mode, and cannot turn
+  it on: hand the person its review URL.
 - `update_workflow` on a **draft** playbook adopts your edit immediately.
 - `update_workflow` on a **live** playbook (active/supervised) appends your version
   but leaves the running one pointed at what the human approved. You get

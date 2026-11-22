@@ -9,15 +9,25 @@ You own the investigation and the visual intent. Orchard owns tenant-scoped data
 access, the versioned visual grammar, rendering, validation, persistence, and the
 sandbox around custom code.
 
+A page and a tool are one document in Orchard, so pages are made and changed with
+the tool set's calls. A page is views alone; a request for forms, buttons, tables to
+act on or playbooks to run is a tool, built as tiles from the toolkit's `kit`, not as
+a page document.
+
 ## Load contracts only when needed
 
-Call `get_insight_page_toolkit` before authoring. It returns the current
-VisualDocument schema, renderer contract, data-source contract, and the exact tools a
-saved page may refresh. Do not reproduce or guess that grammar from this skill: the
-toolkit is the runtime source of truth and keeps the ordinary MCP context small.
+Call `get_tool_toolkit` before authoring. It returns the current VisualDocument
+schema, renderer contract, data-source contract, and the exact tools a saved page may
+refresh. Do not reproduce or guess that grammar from this skill: the toolkit is the
+runtime source of truth and is large, so it is read when needed and not otherwise.
 
-For an edit, call `list_insight_pages` to locate the page and `get_insight_page` to
-read its full document, live data-source plan, and revision before changing anything.
+For an edit, call `list_tools` to locate the page and `get_tool` with its `tool_id`
+to read it before changing anything: its `name`, `description` and `tiles` are the
+document, its `data` is the data-source plan, and `revision` is what you send back.
+`get_tool` reads the draft when you may edit the page. A page over 100 KB comes back
+as an outline, and one over 30 KB is better worked part by part: `tool_outline`,
+`tool_search` to find the part, `tool_read` to read it whole, then `tool_edit` to
+replace text inside it or `tool_change_parts` to add, remove or move parts.
 
 ## Research autonomously
 
@@ -27,9 +37,12 @@ additional pages when a summary cannot establish the process. Application switch
 is not a business process. Infer what happened from record-level evidence and preserve
 uncertainty when the evidence is partial.
 
-Keep the saved data plan purposeful. Each data source is a live Orchard MCP read with
-an alias, tool, arguments, and reason. The page reruns those reads whenever it opens;
-never paste source records into the document as a frozen substitute.
+Keep the saved data plan purposeful. Each data source is a live read with an alias,
+tool, arguments, and reason: a read-only Orchard tool from the toolkit's catalog,
+`call_operation` for a read of a connected system, or a read tool on an MCP server the
+person has connected. The page reruns those reads whenever it opens; never paste
+source records into the document as a frozen substitute. A read on the person's own
+sign-in makes the page theirs alone.
 
 ## Compose the whole page
 
@@ -50,18 +63,24 @@ editorial hierarchy and useful span variation.
 
 ## Validate, save, and revise safely
 
-Call `validate_insight_page` with the complete document and data-source plan. Fix all
+Call `validate_tool` with the complete `document` and its `data_sources`. Fix all
 errors and repeat until valid.
 
-- New page: `create_insight_page`.
-- Existing page: `update_insight_page` with the `expected_revision` returned by
-  `get_insight_page`. If Orchard reports a revision conflict, reopen the current page
-  and reapply the requested change; never overwrite it blindly.
+- New page: `save_tool` with the `document` and `data_sources`, and no `tool_id`.
+- Existing page: `save_tool` with its `tool_id`, the `expected_revision` that
+  `get_tool` returned, the changed `document` and its `data_sources`. If Orchard
+  reports a revision conflict, read the page again and reapply the requested change;
+  never overwrite it blindly.
+
+A save is a draft its editors alone see. Publish (`publish: true`) only when the
+operator asks for it. Then call `check_tool_needs` with the `tool_id` and pass on any
+fix or ask it returns.
 
 Direct creation and editing use the model in this MCP client, so they do not require
 Orchard BYOK. They do require the connection's `build` scope. Use
 `create_insight_page_from_prompt` only when the operator explicitly wants Orchard's
 own autonomous Studio agent; that path uses the tenant's configured BYOK provider.
 
-Finish with the saved page name, revision, and open URL. Call out missing/stale data
-or assumptions that materially affect what the page says.
+Finish with the saved page name, `tool_id`, revision, whether it is still a draft, and
+its path. Call out missing/stale data or assumptions that materially affect what the
+page says.

@@ -6,8 +6,9 @@ argument-hint: "[only-automatable]"
 You are helping an MSP decide what to automate, using the **Orchard** MCP server.
 Tool names below are the server's own; your client namespaces them per server, so
 they may surface as `mcp__…orchard__<tool>`. Orchard has been watching this estate —
-the technicians' activity stream and the ConnectWise ticket/time corpus — and can
-surface the recurring, manual work that shouldn't be manual.
+the technicians' activity stream and the PSA's tickets and time (ConnectWise,
+Autotask, HaloPSA or Kaseya BMS) — and can surface the recurring, manual work that
+shouldn't be manual.
 
 Do this:
 
@@ -19,8 +20,9 @@ Do this:
 
 2. **Present the candidates as a prescriptive table**, richest first. For each:
    - **Title** and one-line pitch.
-   - **Source** — `activity` (seen on a tech's screen) or `psa` (a recurring
-     ConnectWise ticket category, priced from *logged* labor).
+   - **Source** — `activity` (seen on a tech's screen) or `psa` (a recurring PSA
+     ticket category, priced from *logged* time; where none was logged it falls back
+     to a default handle time, and its pitch says "estimated").
    - **Automatable** — `yes` / `partial` / `no`.
    - **Impact** — `est_minutes_week` and `est_dollars_week`, plus the evidence
      (`occurrences`, `distinct_days`, `distinct_users`).
@@ -31,12 +33,12 @@ Do this:
    time, cleanest connector coverage, most techs affected). Be honest about the
    `partial` / `no` ones — don't oversell context-switching noise as automation.
 
-4. **Explain how to accept.** Accepting a candidate turns it into a real,
-   dynamic Orchard workflow (fields fill themselves at run time via trigger
-   inputs + AI-filled fields — no hands on the keyboard). That step is an operator
-   action in the Orchard console (**Discoveries → Accept**), which requires
-   owner/admin sign-in — it is intentionally *not* an agent-executable MCP tool,
-   because it creates an automation that can act on real systems.
+4. **Explain how to accept.** Accepting a candidate turns it into a **draft**
+   playbook, never a live one. In Orchard that is **Build it** on the candidate under
+   **Insights → Recommendations** (owner/admin). From here, `/automate` does it:
+   `build_workflow` with `from_discovery_id` saves the draft, links the candidate and
+   marks it accepted. Either way the draft runs nothing until a person reviews it and
+   turns it on in Orchard.
 
 Keep it concrete and short. This is a "what should we automate here, and what's it
 worth?" answer, grounded in what Orchard actually measured — not generic advice.

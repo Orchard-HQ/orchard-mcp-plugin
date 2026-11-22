@@ -1,6 +1,6 @@
 ---
 name: workflow-troubleshooting
-description: Diagnose and fix a misbehaving Orchard playbook step by step — the evidence order, the test rungs, and the repair loop. Use whenever a workflow failed, a ConnectWise step errors, a desktop step misses its target, or a webhook never fires, driven through the Orchard MCP diagnostics tools (test_workflow_node, observe_machine, test_step_on_machine, connectwise_catalog, test_connection, simulate_webhook).
+description: Diagnose and fix a misbehaving Orchard playbook step by step — the evidence order, the test rungs, and the repair loop. Use whenever a workflow failed, a PSA step errors, a desktop step misses its target, or a webhook never fires, driven through the Orchard MCP diagnostics tools (test_workflow_node, observe_machine, test_step_on_machine, the PSA catalogs, test_connection, simulate_webhook).
 ---
 
 # Troubleshooting Orchard workflows
@@ -20,15 +20,19 @@ real than the one above it. Climb only as far as the diagnosis needs:
    a write returns exactly what it WOULD have sent. Most failures die here:
    the rendered payload shows the wrong board id, the empty ticket number, the
    condition taking the other branch.
-3. For ConnectWise steps: `connectwise_catalog` for what the operation really
-   wants, then `connectwise_call` with a GET to see the live record the step
+3. For PSA steps: that PSA's catalog (`connectwise_catalog`,
+   `autotask_catalog`, `halo_catalog` or `bms_catalog`) for what the operation
+   really wants, then its call (`connectwise_call`, `autotask_call`,
+   `halo_call` or `bms_call`) with a read to see the live record the step
    would touch. A 403 here is a permissions diagnosis, not a workflow bug —
-   the error carries CW's own status and message now; read it, don't guess.
+   the error carries the PSA's own status and message; read it, don't guess.
 4. For desktop steps: `observe_machine` FIRST (browser_scene / uia_tree — it
    actuates nothing and shows the control names that exist right now), then,
    only when you need proof the step lands, `test_step_on_machine` — one real
    step on a real endpoint. It drives the actual desktop: say what you are
-   about to drive before you drive it, and prefer a test machine.
+   about to drive before you drive it, and prefer a test machine. Both are
+   refused while someone is at that keyboard or the workspace or client is
+   supervised; observing needs the build scope, the step test the run scope.
 5. For auth: `test_connection`. For webhooks: `simulate_webhook` — it also
    tells you whether the REAL delivery would land (trigger present, enabled,
    playbook armed), which is the answer when "the webhook never fires."
@@ -41,8 +45,9 @@ workflow-authoring skill): on a live playbook your fix lands as a staged
 version with a review URL, and that is the correct outcome, not a failure.
 
 - A failing desktop selector: the scene from `get_step_test` (or a failed
-  run's step result) lists what the watcher actually saw. Fix the selector to
-  match the scene, prove it with `test_step_on_machine`, then edit the graph.
+  run's step result) lists what Orchard Desk actually saw on the computer. Fix
+  the selector to match the scene, prove it with `test_step_on_machine`, then
+  edit the graph.
 - Never fix by widening: a step that fails on a missing required field gets
   the field, not a retry bump. `retries` on a step is for flaky transport,
   not for wrong configuration.

@@ -27,8 +27,9 @@ list of what a person should do next.
    desktop selector with a proposed replacement awaiting a human. Note which
    playbooks appear more than once: a playbook that keeps healing is mis-compiled,
    and repairing it beats approving another patch.
-5. **SLA pressure**, if ConnectWise is wired: `list_tickets` with
-   `breached_sla: true, open_only: true`.
+5. **SLA pressure**, if a PSA is wired: `list_tickets` with
+   `breached_sla: true, open_only: true`. On ConnectWise, `sort: "minutes_to_breach"`
+   with `open_only: true` also shows the tickets about to breach, closest first.
 
 Then produce:
 

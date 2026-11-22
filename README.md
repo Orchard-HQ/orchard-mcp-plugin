@@ -19,8 +19,9 @@ the platform runs on a schedule, callable by an agent, scoped to your tenant.
   Discovery Report** artifact, via the bundled `discovery-report` skill.
 - **`/automate [what]`**: finds the work **and builds the automation**. The agent
   authors a workflow graph against Orchard's node catalog and validator and saves it
-  as a **draft** in your tenant (you activate it). Orchard supplies the rails and the
-  agent does the authoring, with no Orchard-side AI. Needs the `build` scope.
+  as a **draft** in your tenant (you activate it), or sets up one of Orchard's
+  ready-made recipes when one already does the job. Orchard supplies the rails and
+  the agent does the authoring. Needs the `build` scope.
 - **`/workflow-edit [playbook] — [change]`**: reads an existing playbook, proposes
   the change, shows you the node-level diff, validates, and saves a new version.
 - **`/playbook-debug [playbook or run id]`**: takes a failing playbook (or the newest

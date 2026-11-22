@@ -15,9 +15,11 @@ Request: **$ARGUMENTS**
    automation to edit.
 2. **Read it.** `get_workflow` — the current graph, its status, its triggers, the
    linter's warnings. Note whether `is_live` is true: that decides what step 6 can do.
-3. **Get the toolkit.** `get_workflow_toolkit` — node types, ConnectWise ops, config
-   field keys, and which connectors this tenant actually has wired. Never edit using
-   a field key you didn't read here.
+3. **Get the toolkit.** `get_workflow_toolkit` — node types, PSA ops, config field
+   keys, and which connectors this tenant actually has wired. A connection with many
+   operations is listed by name only: read the one you need with
+   `find_connector_operations`. Never edit using a field key you didn't read in
+   either.
 4. **Author the new graph.** Change as little as possible: keep node ids stable so
    the diff reads as the edit you intended, not a rewrite.
 5. **Validate and diff.** `validate_workflow` with **both** `graph` and

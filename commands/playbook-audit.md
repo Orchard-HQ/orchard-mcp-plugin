@@ -26,8 +26,8 @@ it valuable" — the ledger answers that one.
    - `get_workflow_evidence` — the Witness's receipts. `observed: 0` means the
      playbook was hand-built with no evidence behind it. That's allowed, but it's a
      different kind of confidence and should be labelled. `thin_evidence: true` means
-     it was compiled from one or two recordings — quote `observed` alongside any
-     confidence figure, never the figure alone.
+     fewer than three recordings stand behind it (none, for a hand-built one) — quote
+     `observed` alongside any confidence figure, never the figure alone.
    - `list_heals` for that `workflow_id` — repeated heals on the same node mean a
      fragile selector, not a resilient system.
    - `list_runs` / `get_run` — recent failure rate and which step fails.
